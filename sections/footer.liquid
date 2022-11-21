@@ -1,0 +1,162 @@
+<style>
+  .footer-container {
+    padding-top: 30px;
+    padding-right: calc(calc(100% - 1440px) / 2);
+    padding-left: calc(calc(100% - 1440px) / 2);
+    background-image: url('{{ "footer_bg.png" | asset_url }}');
+  }
+</style>
+
+<footer class="site-footer small--text-center" role="contentinfo">
+<div class="footer-mobile">
+
+    <div class="grid-uniform">
+
+    <div class="grid__item">
+
+    <div class="footer-container lazyload" data-bg="{{ 'footer_bg.png' | asset_url }}">
+    <div class="footer-links-listing">
+    <div class="footer-links-listing-inner">
+
+      {% comment %}
+        Calculate the number of footer columns shown
+      {% endcomment %}
+      {% assign num_footer_columns = 0 %}
+      {% if settings.footer_blog_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+      {% if settings.footer_quicklinks_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+      {% if settings.footer_second_menu_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+      {% if settings.footer_social_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+      {% if settings.footer_contact_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+      {% if settings.footer_newsletter_enable %}
+        {% assign num_footer_columns = num_footer_columns | plus: 1 %}
+      {% endif %}
+
+      {% case num_footer_columns %}
+        {% when 0 %}
+        {% when 1 %}
+          {% assign footer_column_width = 'text-center' %}
+        {% when 2 %}
+          {% assign footer_column_width = 'large--one-half medium--one-half' %}
+        {% when 3 %}
+          {% assign footer_column_width = 'large--one-third medium--one-third' %}
+        {% when 4 %}
+          {% assign footer_column_width = 'large--one-quarter medium--one-half' %}
+        {% when 5 %}
+          {% assign footer_column_width = 'large--one-fifth medium--one-half' %}
+        {% when 6 %}
+          {% assign footer_column_width = 'large--one-sixth medium--one-half' %}
+      {% endcase %}
+
+<div class="footer-links">
+<h4>{{ 'layout.footer.shop-by-department' | t }}</h4>
+<ul>
+{% for link in linklists.shop-by-department.links %}
+ <li>{{ link.title | link_to: link.url }}</li>
+{% endfor %}
+</ul>
+</div>
+<div class="footer-links">
+<h4>{{ 'layout.footer.deals-and-steals' | t }}</h4>
+<ul>
+{% for link in linklists.deals-and-steals.links %}
+ <li>{{ link.title | link_to: link.url }}</li>
+{% endfor %}
+</ul>
+</div>
+
+<div class="footer-links">
+<h4>{{ 'layout.footer.customer-support' | t }}</h4>
+<ul>
+{% for link in linklists.customer-support.links %}
+ <li>{{ link.title | link_to: link.url }}</li>
+{% endfor %}
+</ul>
+</div>
+
+<div class="footer-links">
+<h4>{{ 'layout.footer.about' | t }}</h4>
+<ul>
+{% for link in linklists.bnb-info.links %}
+ <li>{{ link.title | link_to: link.url }}</li>
+{% endfor %}
+</ul>
+</div>
+
+<div class="footer-links">
+<h4>{{ 'layout.footer.more-info' | t }}</h4>
+<ul>
+{% for link in linklists.more-info.links %}
+ <li>{{ link.title | link_to: link.url }}</li>
+{% endfor %}
+</ul>
+</div>
+
+  {% comment %}
+  <div class="footer-links footer-social">
+    <h4>{{ 'layout.footer.social_title' | t }}</h4>
+    {% comment %}
+      Loop through the social network links
+    {% endcomment %}
+    {% include 'social-links' %}
+  </div>
+  {% endcomment %}
+      
+  <div class="footer-links footer-newsletter">
+    <h4>{{ 'layout.footer.newsletter_title' | t }}</h4>
+    <p>{{ 'layout.footer.newsletter_caption' | t }}</p>
+    {% include 'newsletter-form' %}
+
+    <div class="footer-social-meida">
+      {% include 'social-links' %}
+    </div>
+  </div>
+
+
+
+
+</div>
+</div>
+       <div class="foter-copyright">
+         <div class="foter-copyright-inner">
+           <p class="site-footer__links">&copy; {{ 'now' | date: "%Y" }} BnB Enterprise &nbsp;&nbsp;&bull;&nbsp;&nbsp; <a target="_blank" href="https://goo.gl/maps/vbsUcDi2rMq">44621 Guilford Drive Suite 130 Ashburn, VA 20147</a> &nbsp;&nbsp;&bull;&nbsp;&nbsp; <a href="tel:17037233405">1-703-723-3405</a></p>
+<!--            {{ settings.footer_contact_text }} -->
+           	<br/>
+           <p class="site-footer__links">CALIFORNIA PROPOSITION 65 WARNING<br/>
+                •	WARNING: This product contains nicotine. Nicotine is an addictive chemical.<br/>
+              •	WARNING: Cigar smoking can cause cancers of the mouth and throat, even if you do not inhale.<br/>
+              •	WARNING: Cigar smoking can cause lung cancer and heart disease.<br/>
+              •	WARNING: Cigars are not a safe alternative to cigarettes.<br/>
+              •	WARNING: Tobacco smoke increases the risk of lung cancer and heart disease, even in nonsmokers.<br/>
+              •	SURGEON GENERAL WARNING: Tobacco Use Increases the Risk of Infertility, Stillbirth and Low Birth Weight.
+           </p>
+         </div>
+       </div>
+      
+    </div>
+</div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": []
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

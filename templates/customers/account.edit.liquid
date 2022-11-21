@@ -1,0 +1,21 @@
+<div class="main-container">
+  <div class="grid">
+
+    <div class="grid__item large--one-whole small--text-center">
+
+      <div class="section-header section-header--large">
+        {% include 'breadcrumb' %}
+        <h1 class="section-header__title">{{ shop.metafields.locales.edit_account }}</h1>
+      </div>
+
+      <div class="grid__item push--large--three-tenths large--two-fifths">
+        {% comment %}
+          This form must use 'create_customer'
+        {% endcomment %}
+        {% include 'customer-fields' %}
+
+      </div>
+    </div>
+
+  </div>
+</div>

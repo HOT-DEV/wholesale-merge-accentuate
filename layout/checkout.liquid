@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+    <meta name="referrer" content="origin">
+
+    <title>{{ page_title }}</title>
+
+    {{ content_for_header }}
+
+    {{ checkout_stylesheets }}
+    {{ checkout_scripts }}
+  </head>
+  <body>
+    {{ skip_to_content }}
+    
+    <div class="banner" data-header>
+      <div class="wrap">
+        {{ content_for_logo }}
+      </div>
+    </div>
+
+    {{ order_summary_toggle }}
+
+    <div class="content" data-content>
+      <div class="wrap">
+
+        <div class="main" role="main">
+          <div class="main__header">
+            {{ content_for_logo }}
+            {{ breadcrumb }}
+            {{ alternative_payment_methods }}
+          </div>
+          <div class="main__content">
+            {{ content_for_layout }}
+          </div>
+          <div class="main__footer">
+            {{ content_for_footer }}
+          </div>
+        </div>
+        <div class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            {{ content_for_logo }}
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    {{ tracking_code }}
+    
+  </body>
+</html>
+
+<style>
+  .boxshadow .content-box {overflow: hidden;}
+  {% unless customer.tags contains 'Wholesale' or customer.tags contains 'wholesale' %}
+  [data-gateway-group="manual"] {
+    display: none !important;
+  }
+  {% endunless %}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+  {% unless customer.tags contains 'Wholesale' or customer.tags contains 'wholesale' %}
+  $('[data-gateway-group="manual"]').hide();
+  {% else %}
+  if ($('.payment-due__price').data('checkout-payment-due-target') < 119999) {
+    $('.radio__label__primary[data-shipping-method-label-title="Free Shipping"]').closest('.content-box__row').remove()
+    $('.section--shipping-method .input-radio').first().prop('checked', true);
+  }
+  {% endunless %}
+  
+  console.log('wat?');
+  
+  (function() {
+    const discountCode = 'CODACHPAYMENTDISCOUNT2319';
+    const achDiscountCode = 'ACHPAYMENTDISCOUNT2319';
+    const codDiscountCode = 'CODPAYMENTDISCOUNT2319';
+    
+    function addOrRemoveDiscount($input, discount) {
+      var selectedText = $input.closest('.radio-wrapper').find('.radio__label__primary').text().trim();
+      console.log(selectedText);
+      
+      if (selectedText === 'Cash on Delivery (COD)') {
+        $('#order-summary #checkout_reduction_code').val(codDiscountCode);
+        $('#order-summary #checkout_reduction_code').closest('.field__input-btn-wrapper').find('button[type="submit"]').attr('disabled', false).click();
+      } else if (selectedText === 'ACH') {
+        $('#order-summary #checkout_reduction_code').val(achDiscountCode);
+        $('#order-summary #checkout_reduction_code').closest('.field__input-btn-wrapper').find('button[type="submit"]').attr('disabled', false).click();
+      } else {
+        var form = $('#order-summary .applied-reduction-code__information:contains('+codDiscountCode+'), #order-summary .applied-reduction-code__information:contains('+achDiscountCode+')').closest('form');
+        form.find('button[type="submit"]').click();
+      }
+      if (selectedText === 'Credit card') {
+        $('.order-summary__section--discount').find('.tags-list .tag button').click();
+        console.log('work');
+      }
+    }
+    
+    $('body').on('change', '[name="checkout[payment_gateway]"]', function() {
+      console.log('changed');
+      addOrRemoveDiscount($(this));
+    });
+    
+    $('body').on('click', '#order-summary .field__input-btn', function(e) {
+      var selectedText = $('[name="checkout[payment_gateway]"]:checked').closest('.radio-wrapper').find('.radio__label__primary').text().trim();
+      var invalid;
+      
+      if ($('#order-summary #checkout_reduction_code').val() === achDiscountCode && !(selectedText === 'ACH')) {
+        invalid = 'ACH';
+      } else if ($('#order-summary #checkout_reduction_code').val() === codDiscountCode && !(selectedText === 'Cash on Delivery (COD)')) {
+        invalid = 'COD';
+      } else {
+        invalid = false;
+      }
+      
+      if (invalid) {
+        e.preventDefault();
+        console.log('here now');
+        $('#order-summary .field').removeClass('field--active field--show-floating-label');
+        $('#order-summary #checkout_reduction_code').val('');
+        $('#order-summary .field__input-btn').addClass('btn--disabled').attr('disabled', true);
+        $('#order-summary #checkout_reduction_code').closest('form').before('<div data-flash="8000" aria-atomic="true" aria-live="polite" class="notice notice--success" role="status" tabindex="-1"><svg class="icon-svg icon-svg--size-24 notice__icon" aria-hidden="true" focusable="false"><use xlink:href="#success"></use></svg><p class="notice__text">You must use the '+invalid+' payment meathods to use this discount code.</p></div>');
+      }
+    });
+    
+    
+    
+    addOrRemoveDiscount($('.input-radio[name="checkout[payment_gateway]"]:checked'));
+    
+  })();
+  
+</script>

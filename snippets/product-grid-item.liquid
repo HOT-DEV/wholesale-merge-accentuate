@@ -1,0 +1,133 @@
+
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'large--one-third medium-down--one-half' %}
+{% endunless %}
+
+{% unless current_collection == blank %}
+  {% assign current_collection = collection %}
+{% endunless %}
+
+{% assign on_sale = false %}
+{% assign sale_text = 'products.product.sale' | t %}
+{% if bold_compare_at_price > product.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% assign sold_out = true %}
+{% assign sold_out_text = 'products.product.sold_out' | t %}
+{% if product.available %}
+  {% assign sold_out = false %}
+{% endif %}
+
+<div class="list-item box grid__item {{grid_item_width}}{% if sold_out %} sold-out{% endif %}{% if on_sale %} on-sale{% endif %}">
+  
+  {% include 'bold-product' with product, hide_action: 'skip' %}
+  
+  <div class="product-grid-item">
+    {% if product.metafields.inventory.ShappifySale == "true" and false %}
+    <span class="on-sale">Sale</span>
+    {% endif %}
+    
+    {% include 'shappify-sales-icon-collection' %}
+    <span class="grid-link__image ab-grid-link__image--product clearfix">
+      {% if on_sale and settings.collections_show_sale_circle and wh_discount_value == 1 and set_price == null %}
+        <span class="badge badge--sale">
+          <span class="badge__text{% if sale_text.size > 7 %} badge__text--small{% endif %}">{{ 'products.product.sale' | t }}</span>
+        </span>
+      {% endif %}
+      {% if sold_out and settings.collections_show_sold_out_circle %}
+        <span class="badge badge--sold-out">
+          <span class="badge__text{% if sold_out_text.size > 9 %} badge__text--small{% endif %}">{{ 'products.product.sold_out' | t }}</span>
+        </span>
+      {% endif %}
+      <span class="img grid-link__image-centered">
+        <a href="{{ product.url }}">
+          <img src="{{ 'lazy.gif' | asset_url }}"
+               data-src="{{ product.featured_image.src | img_url: '156x154' }}"
+               data-srcset="{{ product.featured_image.src | img_url: 'grande' }} 600w, {{ product.featured_image.src | img_url: '400x' }} 400w,{{ product.featured_image.src | img_url: '360x' }} 360w, {{ product.featured_image.src | img_url: '156x154' }} 156w"
+               data-sizes="(max-width: 1300) 400w, 156px"
+               class="lazyload"
+               alt="{{ product.featured_image.alt | escape }}">
+        </a>
+      </span>
+    </span>
+	<div class="block">
+      <h4><a href="{{ product.url }}">{{ product.title }}</a></h4>
+      <div class="prices">
+        <span class="prices-container">
+          {% if product.price_varies %}
+          <div class="price">{{ product.price_min | money | replace: '$ ', '$' }} - {{ product.price_max | money | replace: '$ ', '$' }}</div>
+          <div class="yotpo bottomLine"
+              data-appkey="Z27A76DgfCrjO46QR080KW7KFQubD2Wh2Wso5hUL"
+              data-domain="{{shop.permanent_domain | escape }}"
+              data-product-id="{{ product.id }}"
+              data-product-models="{{ product.id }}"
+              data-name="{{ product.title | escape }}"
+              data-url="{{ shop.url }}{{ product.url }}"
+              data-image-url="{{ product.featured_image | product_img_url: 'large' |replace: '?', '%3F' | replace: '&','%26'}}"
+              data-description="{{ product.description | escape }}"
+              data-bread-crumbs="{% for tag in product.tags %}{{ tag | escape }};{% endfor %}">
+          </div>
+          
+<!--           <div class="compare-price">{{ product.compare_at_price_min | money | replace: '$ ', '$' }} - {{ product.compare_at_price_max | money | replace: '$ ', '$' }}</div> -->
+          {% else %}
+          <div class="price">{{ product.price | money | replace: '$ ', '$' }}</div>
+          <div class="yotpo bottomLine"
+              data-appkey="Z27A76DgfCrjO46QR080KW7KFQubD2Wh2Wso5hUL"
+              data-domain="{{shop.permanent_domain | escape }}"
+              data-product-id="{{ product.id }}"
+              data-product-models="{{ product.id }}"
+              data-name="{{ product.title | escape }}"
+              data-url="{{ shop.url }}{{ product.url }}"
+              data-image-url="{{ product.featured_image | product_img_url: 'large' |replace: '?', '%3F' | replace: '&','%26'}}"
+              data-description="{{ product.description | escape }}"
+              data-bread-crumbs="{% for tag in product.tags %}{{ tag | escape }};{% endfor %}">
+          </div>
+<!--           <div class="compare-price">{{ product.compare_at_price | money | replace: '$ ', '$' }}</div> -->
+          {% endif %}
+        </span>
+        <span class="reviews-container">
+          <div><a href="{{ product.url }}">{{ product.variants.size }} {{ product.variants.size | pluralize: 'Option', 'Options' }}</a></div>
+          
+          {% if product.variants.size > 1 %}
+            <a href="{{ product.url }}" class="btn">Choose Option</a>
+          {% else %}
+            <form action="/cart/add" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="id" value="{{ product.variants[0].id }}">
+              {% if product.available == false %}
+              <button type="submit" name="add" disabled class="btn soldout">
+                <span>Sold Out</span>
+              </button>
+              {% else %}
+              <button type="submit" name="add" class="btn">
+                <span>Add</span>
+              </button>
+              {% endif %}
+            </form>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+<!--     <a class="btn" href="{{ product.url }}">Choose Option</a> -->
+  </div>
+  
+  {% if template contains 'grid_no_layout' or 'search' %}
+  
+  <script>
+    $('document').ready(function(){	
+   var str = '{% for tag in product.tags %}{{ tag | escape }} developer {% endfor %}';
+   var newString = str.replace(/[^A-Z0-9]/ig, "-");
+    var split_string =  newString.split("-developer-");
+      //var replace_string =  newString.replace("-developer-", "&nbsp;");
+      
+     //var newString1=  newString.replace("_developer_"," ");
+     var newString1 =  split_string.join("  ");
+      //alert(ss);
+      
+   $('#id-{{forloop.index}}').addClass(newString1);
+    })
+  </script>
+  
+  {% endif %}
+  
+</div>
